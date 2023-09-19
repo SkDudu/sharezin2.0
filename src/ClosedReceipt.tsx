@@ -1,33 +1,39 @@
-import { Image, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native';
+import { Box, Link, Stack, Text } from 'native-base';
 
-import tw from 'twrnc';
+import Receipt from "./../assets/icons/ReceiptOutline.svg"
+import Pin from "./../assets/icons/MapPin.svg"
 
-export default function App() {
+export default function App({navigation}) {
   return (
-    <View style={tw `flex-1 px-2 mt-4`}>
-      <Text style={tw `text-[#0b0c10] font-medium text-xl`}>Contas fechadas</Text>
-      <View style={tw `flex bg-[#eaeaea] w-full mt-2 px-2 py-2 rounded gap-1`}> 
-        <View style={tw `flex-row bg-[#eaeaea] justify-between`}>
-            <View style={tw `flex-row bg-[#eaeaea] gap-2 items-center`}>
-                <Image 
-                    source={require('./../assets/icons/ReceiptOutline.svg')}
-                    style={{width: 24, height: 24}}
-                />
-                <Text>Conta do praiow</Text>
-            </View>
-        </View>
-        <View style={tw `flex-row bg-[#eaeaea] justify-between`}>
-          <View style={tw `flex-row bg-[#eaeaea] items-center justify-between gap-1`}>
-            <Image source={require('./../assets/icons/mapPin.svg')}/>
-            <Text style={tw `font-sm text-[#717171]`}>Nome do restaurante</Text>
-          </View>
-        </View>
-        <View style={tw `flex-row bg-[#eaeaea] gap-2 mt-2`}>
-          <View style={tw `flex bg-[#fff] h-[25px] justify-center items-center rounded-full`}>
-            <Text style={tw `text-black px-3`}>Fechada: --------</Text>
-          </View>
-        </View>
-      </View>
-    </View>
+    <SafeAreaView>
+      <Box bgColor={"#f5f7f9"} mx={2}>
+        <Stack direction={"column"}>
+          <Text fontWeight={"medium"} fontSize={24} mt={10}>Conta fechada</Text>
+          <Link onPress={() => navigation.navigate('ReceiptDetailsClosed')}>
+            <Box w={"full"} bgColor={"#ececec"} mt={4} rounded={'md'} px={2} py={2}>
+              <Stack direction={"column"}>
+                <Stack direction={"row"} justifyContent={"space-between"} alignItems={"center"} mb={1}>
+                  <Stack direction={'row'} alignItems={"center"}>
+                    <Receipt />
+                    <Text color={"#000"} fontSize={16} fontWeight={"medium"} pl={2}>Praiow</Text>
+                  </Stack>
+                  <Text>12/04</Text>
+                </Stack>
+                <Stack direction={"row"} justifyContent={"space-between"} alignItems={"center"}mb={2}>
+                  <Stack direction={'row'} alignItems={"center"}>
+                    <Pin />
+                    <Text color={"#575960"} fontSize={14} fontWeight={"normal"} pl={1}>Praiow</Text>
+                  </Stack>
+                </Stack>
+                <Box w={"200px"} bgColor={'#575960'} px={3} py={1} rounded={'2xl'} alignItems={"center"}>
+                  <Text color={'white'}>Fechada: 12/04 às 00:34</Text>
+                </Box>
+              </Stack>
+            </Box>
+          </Link>
+        </Stack>
+      </Box>
+    </SafeAreaView>
   );
 }
