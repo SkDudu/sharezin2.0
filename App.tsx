@@ -1,4 +1,7 @@
-import { NativeBaseProvider } from "native-base";
+import { NativeBaseProvider, INativebaseConfig } from "native-base";
+import { useEffect, useState } from "react";
+import { Session } from "@supabase/supabase-js";
+import { supabase } from "./lib/supabse";
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -18,6 +21,16 @@ import Profile from "./src/Profile";
 import ReceiptDetails from "./src/ReceiptDetails";
 import CostParcial from "./src/CostParcial";
 import ReceiptDetailsClosed from "./src/ReceiptDetailsClosed";
+import ResumeReceipt from "./src/ResumeReceipt";
+import NewReceipt from "./src/NewReceipt";
+import EditReceipt from "./src/EditReceipt";
+import ShareReceipt from "./src/ShareReceipt";
+import Config from "./src/Config";
+
+const config: INativebaseConfig = {
+  // rest of the config keys like dependencies can go here
+  strictMode: 'off',
+};
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator()
@@ -58,8 +71,8 @@ function AuthNavigator(){
 
 function TabNavigator(){
   return(
-    <Tab.Navigator initialRouteName='HomeScreen'>
-      <Tab.Screen name='HomeScreen' component={Home} 
+    <Tab.Navigator initialRouteName='Home'>
+      <Tab.Screen name='Home' component={Home} 
         options={{ headerShown: false, headerShadowVisible: false, tabBarIcon: ({ color }) => <HomeIcon width={24} height= {24} fill={color}/> }}
       />
       <Tab.Screen name='ClosedReceipt' component={ClosedReceipt} 
@@ -73,16 +86,38 @@ function TabNavigator(){
 }
 
 export default function App() {
+  const [session, setSession] = useState<Session | null>(null)
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session)
+    })
+
+    supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session)
+    })
+  }, [])
+
   return (
-    <NativeBaseProvider>
+    <NativeBaseProvider config={config}>
       <NavigationContainer>
         <Stack.Navigator>
-          <Stack.Screen name='LoginScreen' component={AuthNavigator} options={{ headerShown: false }}/>
-          <Stack.Screen name='Home' component={TabNavigator} options={{ headerShown: false }}/>
-          <Stack.Screen name='SearchReceipt' component={SearchReceipt} options={{ title: 'Pesquise pelo código', headerShadowVisible: false, headerStyle: {backgroundColor: '#f5f7f9'} }}/>
-          <Stack.Screen name='ReceiptDetails' component={ReceiptDetails} options={{ title: 'Conta geral', headerShadowVisible: false, headerStyle: {backgroundColor: '#f5f7f9'} }}/>
-          <Stack.Screen name='CostParcial' component={CostParcial} options={{ title: 'Valor do pedido', headerShadowVisible: false, headerStyle: {backgroundColor: '#f5f7f9'} }}/>
-          <Stack.Screen name='ReceiptDetailsClosed' component={ReceiptDetailsClosed} options={{ title: 'Valor do pedido', headerShadowVisible: false, headerStyle: {backgroundColor: '#f5f7f9'} }}/>
+          {session && session.user ? (
+            <Stack.Group>
+              <Stack.Screen name='TabNavigator' component={TabNavigator} options={{ headerShown: false }}/>
+              <Stack.Screen name='SearchReceipt' component={SearchReceipt} options={{ title: 'Pesquise pelo código', headerShadowVisible: false, headerStyle: {backgroundColor: '#f5f7f9'} }}/>
+              <Stack.Screen name='ReceiptDetails' component={ReceiptDetails} options={{ title: 'Conta geral', headerShadowVisible: false, headerStyle: {backgroundColor: '#f5f7f9'} }}/>
+              <Stack.Screen name='CostParcial' component={CostParcial} options={{ title: 'Valor do pedido', headerShadowVisible: false, headerStyle: {backgroundColor: '#f5f7f9'} }}/>
+              <Stack.Screen name='ReceiptDetailsClosed' component={ReceiptDetailsClosed} options={{ title: 'Valor do pedido', headerShadowVisible: false, headerStyle: {backgroundColor: '#f5f7f9'} }}/>
+              <Stack.Screen name='ResumeReceipt' component={ResumeReceipt} options={{ title: 'Minha parte da conta', headerShadowVisible: false, headerStyle: {backgroundColor: '#f5f7f9'} }}/>
+              <Stack.Screen name='NewReceipt' component={NewReceipt} options={{ title: 'Nova conta compartilhada', headerShadowVisible: false, headerStyle: {backgroundColor: '#f5f7f9'} }}/>
+              <Stack.Screen name='EditReceipt' component={EditReceipt} options={{ title: 'Editar conta compartilhada', headerShadowVisible: false, headerStyle: {backgroundColor: '#f5f7f9'} }}/>
+              <Stack.Screen name='ShareReceipt' component={ShareReceipt} options={{ title: 'Código de convite', headerShadowVisible: false, headerStyle: {backgroundColor: '#f5f7f9'} }}/>
+              <Stack.Screen name='Config' component={Config} options={{ title: 'Configurações', headerShadowVisible: false, headerStyle: {backgroundColor: '#f5f7f9'} }}/>
+            </Stack.Group>
+          ) : (
+            <Stack.Screen name='LoginScreen' component={AuthNavigator} options={{ headerShown: false }}/>
+          )}
         </Stack.Navigator> 
       </NavigationContainer>
     </NativeBaseProvider>

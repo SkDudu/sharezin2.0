@@ -1,36 +1,52 @@
-import { Image, SafeAreaView, ScrollView, Pressable, View } from 'react-native';
-import { Box, FlatList, Link, Stack, Text } from 'native-base';
+import { useEffect, useState } from "react";
+import { Alert, SafeAreaView, Pressable, View } from 'react-native';
+import { Box, Fab, FlatList, Icon, Link, Stack, Text } from 'native-base';
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { useRoute } from "@react-navigation/native";
+
+import { supabase } from '../lib/supabse';
 
 import tw from 'twrnc';
 
 import Lupe from './../assets/icons/Lupe.svg'
 import Receipt from "./../assets/icons/ReceiptOutline.svg"
 import Pin from '../assets/icons/MapPin.svg'
+import PlusWhite from './../assets/icons/PlusWhite.svg'
 
+export default function Home({navigation}){
+  const route = useRoute();
+  const [userId, setUserId] = useState()
+  const [response, setResponse] = useState()
 
-export default function App({navigation}) {
-  const data = [
-    {
-      id: "1",
-      nameReceipt: "Niver no Praiow",
-      nameRestaurant: "Praiow",
-      ownerReceipt: "Eduardo Santos",
-      createdAt: "12/04",
-      isOpen: true
-    },
-    {
-      id: "2",
-      nameReceipt: "Saideira",
-      nameRestaurant: "Noite a fora",
-      ownerReceipt: "Burugudulio Trucio",
-      createdAt: "11/01",
-      isOpen: true
+  async function getSession(){ 
+    const { data: { user } } = await supabase.auth.getUser()
+    setUserId(user?.id)
+    //console.log('seesion user id: ', user?.id)
+  }
+
+  useEffect(()=>{
+    const user = userId ? userId : null
+    if(user !== null){
+      async function getReceiptsByUserId(){
+        const { data, error } = await supabase
+        .from('receipt')
+        .select()
+        .eq('user', user)
+    
+        if(data !== null){
+          setResponse(data)
+        }
+      }
+      getReceiptsByUserId()
     }
-  ]
+
+    getSession()
+  }, [userId])
 
   return (
     <SafeAreaView style={tw `h-full`}>
       <View style={tw`flex w-full h-full mt-10 px-2 gap-3`}>
+        <Fab renderInPortal={false} size={"md"} bottom={60} bgColor={"#000"} icon={<Icon color={"white"} as={<PlusWhite />}/>} onPress={() => navigation.navigate('NewReceipt')}/>
         <Text style={tw `text-[#0b0c10] font-semibold text-2xl`}>Encontre a conta que seu amigo fez para a saideira!</Text>
         <Pressable 
           style={tw `flex-row bg-[#0b0c10] h-13 rounded justify-center items-center gap-2`}
@@ -41,30 +57,29 @@ export default function App({navigation}) {
         </Pressable>
         <View style={tw `pt-2`}>
           <Text style={tw `text-[#0b0c10] font-medium text-xl`}>Minhas contas</Text>
-
-          <FlatList data={data} renderItem={({item}) =>
+          <FlatList data={response} keyExtractor={(item) => item?.id} renderItem={({item})=>
             <Box bgColor={"#ececec"} mt={4} rounded={'md'} px={2} py={2}>
-              <Link onPress={() => navigation.navigate('ReceiptDetails')}>
+              <Link onPress={() => navigation.navigate('ReceiptDetails', {receiptId: item.id, userId: userId})}>
                 <Stack direction={"column"} w={"full"}>
                   <Stack direction={"row"} justifyContent={"space-between"} alignItems={"center"} mb={1}>
                     <Stack direction={'row'} alignItems={"center"}>
                       <Receipt />
-                      <Text color={"#000"} fontSize={16} fontWeight={"medium"} pl={2}>{item.nameReceipt}</Text>
+                      <Text color={"#000"} fontSize={16} fontWeight={"medium"} pl={2}>{item.name_receipt}</Text>
                     </Stack>
-                    <Text>{item.createdAt}</Text>
+                    <Text>{item.created_At}</Text>
                   </Stack>
                   <Stack direction={"row"} justifyContent={"space-between"} alignItems={"center"}mb={2}>
                     <Stack direction={'row'} alignItems={"center"}>
                       <Pin />
-                      <Text color={"#575960"} fontSize={14} fontWeight={"normal"} pl={1}>{item.nameRestaurant}</Text>
+                      <Text color={"#575960"} fontSize={14} fontWeight={"normal"} pl={1}>{item.restaurant_name}</Text>
                     </Stack>
                   </Stack>
                   <Stack direction={"row"}>
                     <Box bgColor={"green.600"} px={3} rounded={'xl'} mr={2}>
-                      <Text>{item.isOpen ? <Text color={"green.200"}>Aberta</Text> : <Text color={"green.200"}>Aberta</Text>}</Text>
+                      <Text>{item.status_receipt ? <Text color={"green.200"}>Aberta</Text> : <Text color={"green.200"}>Aberta</Text>}</Text>
                     </Box>
                     <Box bgColor={'coolGray.700'} px={3} rounded={'xl'}>
-                      <Text>{item.isOpen ? <Text color={'coolGray.200'}>Dono</Text> : <Text color={"green.200"}>Dono</Text>}</Text>
+                      <Text>{item.status_receipt ? <Text color={'coolGray.200'}>Dono</Text> : <Text color={"green.200"}>Dono</Text>}</Text>
                     </Box>
                   </Stack>
                 </Stack>

@@ -1,8 +1,11 @@
 import React, {useState} from "react";
-import { ImageBackground, SafeAreaView } from "react-native";
+import { Alert, ImageBackground, SafeAreaView } from "react-native";
 import { Text, Box, Stack, Input, Icon, Button } from "native-base";
+import { useNavigation } from "@react-navigation/core";
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
-//import Input from "../components/Input";
+import { supabase } from "../../lib/supabse";
+import { RootStackParamList } from "../../App";
 
 import bgIcons from './../../assets/bg_icon2.png'
 import Logo from '../../assets/icons/Logo.svg'
@@ -11,10 +14,30 @@ import Password from '../../assets/icons/Password.svg'
 import Eye from '../../assets/icons/eye.svg'
 import EyeSlash from '../../assets/icons/eyeSlash.svg'
 
+type PropNav = NativeStackScreenProps<RootStackParamList, 'Home'>;
+
 
 export default function Login({navigation}){
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+
     const [show, setShow] = React.useState(false);
     const handleClick = () => setShow(!show);
+
+    async function signInWithEmail() {
+    const { data, error } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password,
+    })
+        navigation.navigate("TabNavigator", {
+            screen: "Home",
+            params: {
+                userId: data.session?.user.id
+            }
+        })
+        //console.log('userId: ', data.session?.user.id)
+        if (error) Alert.alert(error.message)
+    }
 
     return(
         <SafeAreaView>
@@ -28,9 +51,20 @@ export default function Login({navigation}){
                         <Box bgColor={"#fff"} p={2} borderTopRightRadius={10} borderTopLeftRadius={10}>
                             <Text color={'#575960'} fontWeight={"normal"} fontSize={32} mb={8}>Login</Text>
                             <Stack direction={"column"}>
-                                <Input InputLeftElement={<Icon as={<At />} ml="2"/>} placeholder="E-mail" w="100%" borderColor={"#eaeaea"} bgColor={"white"} mb={2}/>
+                                <Input 
+                                    value={email} 
+                                    onChangeText={(text) => setEmail(text)}
+                                    InputLeftElement={<Icon as={<At />} ml="2"/>} 
+                                    placeholder="E-mail" 
+                                    w="100%" 
+                                    borderColor={"#eaeaea"} 
+                                    bgColor={"white"} 
+                                    mb={2}
+                                />
                                 <Input 
                                     type={show ? "text" : "password"}
+                                    value={password}
+                                    onChangeText={(text) => setPassword(text)}
                                     InputLeftElement={<Icon as={<Password />} ml="2"/>} 
                                     placeholder="Senha" 
                                     w="100%" 
@@ -42,7 +76,7 @@ export default function Login({navigation}){
                                         </Button>}
                                 />
                             </Stack>
-                            <Button bgColor={"#0b0c10"} h={"56px"} borderRadius={6} mt={4} onPress={() => navigation.navigate('Home')}>
+                            <Button bgColor={"#0b0c10"} h={"56px"} borderRadius={6} mt={4} onPress={() => signInWithEmail()}>
                                 <Text color={'white'} fontWeight={"normal"} fontSize={16}>Entrar</Text>
                             </Button>
                             <Box mt={5}>

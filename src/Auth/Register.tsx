@@ -1,6 +1,8 @@
 import { Box, Button, Icon, Input, ScrollView, Stack, Text } from "native-base";
 import React, {useState} from "react";
-import { SafeAreaView } from "react-native";
+import { Alert, SafeAreaView } from "react-native";
+
+import { supabase } from "../../lib/supabse";
 
 import At from '../../assets/icons/At.svg'
 import Password from '../../assets/icons/Password.svg'
@@ -9,8 +11,30 @@ import EyeSlash from '../../assets/icons/eyeSlash.svg'
 import User from '../../assets/icons/User.svg'
 
 export default function Register({navigation}){
+    const [name, setName] = useState('')
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+
     const [show, setShow] = React.useState(false);
     const handleClick = () => setShow(!show);
+
+    async function signUpWithEmail() {
+        const { data, error } = await supabase.auth.signUp({
+          email: email,
+          password: password,
+        })
+    
+        if (error) {
+            Alert.alert(error.message)
+        }else{
+            await supabase.from('users').insert({
+                id: data.user?.id,
+                name_user: name,
+                email_user: email,
+            })
+            navigation.navigate('Login')
+        }
+      }
 
     return(
         <SafeAreaView>
@@ -25,9 +49,30 @@ export default function Register({navigation}){
                                 <Text color={'#0b0c10'} fontWeight={"normal"} fontSize={16}>Adicionar imagem de perfil</Text>
                             </Button>
                         </Box>
-                        <Input InputLeftElement={<Icon as={<User />} ml="2"/>} placeholder="Nome" w="100%" borderColor={"#eaeaea"} bgColor={"white"} mt={4}/>
-                        <Input InputLeftElement={<Icon as={<At />} ml="2"/>} placeholder="E-mail" w="100%" borderColor={"#eaeaea"} bgColor={"white"} mt={2}/>
                         <Input 
+                            value={name} 
+                            onChangeText={(text) => setName(text)}
+                            InputLeftElement={<Icon as={<User />} 
+                            ml="2"/>} 
+                            placeholder="Nome" 
+                            w="100%" 
+                            borderColor={"#eaeaea"} 
+                            bgColor={"white"} 
+                            mt={4}
+                        />
+                        <Input 
+                            value={email} 
+                            onChangeText={(text) => setEmail(text)}
+                            InputLeftElement={<Icon as={<At />} ml="2"/>} 
+                            placeholder="E-mail" 
+                            w="100%" 
+                            borderColor={"#eaeaea"} 
+                            bgColor={"white"} 
+                            mt={2}
+                        />
+                        <Input 
+                            value={password}
+                            onChangeText={(text) => setPassword(text)}
                             mt={2}
                             type={show ? "text" : "password"}
                             InputLeftElement={<Icon as={<Password />} ml="2"/>} 
@@ -58,7 +103,7 @@ export default function Register({navigation}){
                                     onPress={handleClick}>{show ? <Icon as={<EyeSlash />}/> : <Icon as={<Eye />}/>}
                                 </Button>}
                         />
-                        <Button bgColor={"#0b0c10"} h={"56px"} borderRadius={6} mt={4} onPress={() => navigation.navigate('')}>
+                        <Button bgColor={"#0b0c10"} h={"56px"} borderRadius={6} mt={4} onPress={() => signUpWithEmail()}>
                             <Text color={'white'} fontWeight={"normal"} fontSize={16}>Cadastrar</Text>
                         </Button>
                         <Button bgColor={"#fff"} h={"56px"} borderRadius={6} mt={4} mb={4} onPress={() => navigation.navigate('Login')}>
