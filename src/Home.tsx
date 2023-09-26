@@ -14,9 +14,9 @@ import Pin from '../assets/icons/MapPin.svg'
 import PlusWhite from './../assets/icons/PlusWhite.svg'
 
 export default function Home({navigation}){
-  const route = useRoute();
   const [userId, setUserId] = useState()
-  const [response, setResponse] = useState()
+  const [response, setResponse] = useState<any[]>([])
+  const [responseParticipant, setResponseParticipant] = useState()
 
   async function getSession(){ 
     const { data: { user } } = await supabase.auth.getUser()
@@ -37,7 +37,26 @@ export default function Home({navigation}){
           setResponse(data)
         }
       }
+
+      async function getReceiptsByUserIdParticipant(){
+        const { data, error } = await supabase
+        .from('participant')
+        .select()
+        .eq('user', user)
+    
+        if(data !== null){
+          const response = await supabase
+          .from('receipt')
+          .select()
+          .eq('id', data[0].receipt_id)
+
+          setResponse(response.data)
+          console.log('reponseConvidado', response.data)
+        }
+      }
+
       getReceiptsByUserId()
+      getReceiptsByUserIdParticipant()
     }
 
     getSession()
@@ -46,11 +65,11 @@ export default function Home({navigation}){
   return (
     <SafeAreaView style={tw `h-full`}>
       <View style={tw`flex w-full h-full mt-10 px-2 gap-3`}>
-        <Fab renderInPortal={false} size={"md"} bottom={60} bgColor={"#000"} icon={<Icon color={"white"} as={<PlusWhite />}/>} onPress={() => navigation.navigate('NewReceipt')}/>
+        <Fab renderInPortal={false} size={"md"} bottom={60} bgColor={"#000"} icon={<Icon color={"white"} as={<PlusWhite />}/>} onPress={() => navigation.navigate('NewReceipt', {userId: userId})}/>
         <Text style={tw `text-[#0b0c10] font-semibold text-2xl`}>Encontre a conta que seu amigo fez para a saideira!</Text>
         <Pressable 
           style={tw `flex-row bg-[#0b0c10] h-13 rounded justify-center items-center gap-2`}
-          onPress={() => navigation.navigate('SearchReceipt')}
+          onPress={() => navigation.navigate('SearchReceipt', { userId: userId})}
         >
           <Lupe width={20} height={20} fill="#fff"/>
           <Text style={tw `text-[#fff]`}>Procure a conta pelo código</Text>
@@ -79,7 +98,7 @@ export default function Home({navigation}){
                       <Text>{item.status_receipt ? <Text color={"green.200"}>Aberta</Text> : <Text color={"green.200"}>Aberta</Text>}</Text>
                     </Box>
                     <Box bgColor={'coolGray.700'} px={3} rounded={'xl'}>
-                      <Text>{item.status_receipt ? <Text color={'coolGray.200'}>Dono</Text> : <Text color={"green.200"}>Dono</Text>}</Text>
+                      <Text>{item.status_receipt ? <Text color={'coolGray.200'}>Dono</Text> : <Text color={"green.200"}>Convidado</Text>}</Text>
                     </Box>
                   </Stack>
                 </Stack>
