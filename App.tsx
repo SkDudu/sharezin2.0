@@ -19,9 +19,11 @@ import ForgotPass from "./src/Auth/ForgotPass";
 import Register from "./src/Auth/Register";
 import Profile from "./src/Profile";
 import ReceiptDetails from "./src/ReceiptDetails";
+import ReceiptDetailsParticipant from "./src/ReceiptDetailsParticipant";
 import CostParcial from "./src/CostParcial";
 import ReceiptDetailsClosed from "./src/ReceiptDetailsClosed";
 import ResumeReceipt from "./src/ResumeReceipt";
+import DetailsResumeClosed from "./src/DetailsResumeClosed";
 import NewReceipt from "./src/NewReceipt";
 import EditReceipt from "./src/EditReceipt";
 import ShareReceipt from "./src/ShareReceipt";
@@ -104,16 +106,110 @@ export default function App() {
         <Stack.Navigator>
           {session && session.user ? (
             <Stack.Group>
-              <Stack.Screen name='TabNavigator' component={TabNavigator} options={{ headerShown: false }}/>
-              <Stack.Screen name='SearchReceipt' component={SearchReceipt} options={{ title: 'Pesquise pelo código', headerShadowVisible: false, headerStyle: {backgroundColor: '#f5f7f9'} }}/>
-              <Stack.Screen name='ReceiptDetails' component={ReceiptDetails} options={{ title: 'Conta geral', headerShadowVisible: false, headerStyle: {backgroundColor: '#f5f7f9'} }}/>
-              <Stack.Screen name='CostParcial' component={CostParcial} options={{ title: 'Valor do pedido', headerShadowVisible: false, headerStyle: {backgroundColor: '#f5f7f9'} }}/>
-              <Stack.Screen name='ReceiptDetailsClosed' component={ReceiptDetailsClosed} options={{ title: 'Valor do pedido', headerShadowVisible: false, headerStyle: {backgroundColor: '#f5f7f9'} }}/>
-              <Stack.Screen name='ResumeReceipt' component={ResumeReceipt} options={{ title: 'Minha parte da conta', headerShadowVisible: false, headerStyle: {backgroundColor: '#f5f7f9'} }}/>
-              <Stack.Screen name='NewReceipt' component={NewReceipt} options={{ title: 'Nova conta compartilhada', headerShadowVisible: false, headerStyle: {backgroundColor: '#f5f7f9'} }}/>
-              <Stack.Screen name='EditReceipt' component={EditReceipt} options={{ title: 'Editar conta compartilhada', headerShadowVisible: false, headerStyle: {backgroundColor: '#f5f7f9'} }}/>
-              <Stack.Screen name='ShareReceipt' component={ShareReceipt} options={{ title: 'Código de convite', headerShadowVisible: false, headerStyle: {backgroundColor: '#f5f7f9'} }}/>
-              <Stack.Screen name='Config' component={Config} options={{ title: 'Configurações', headerShadowVisible: false, headerStyle: {backgroundColor: '#f5f7f9'} }}/>
+              <Stack.Screen 
+                name='TabNavigator' 
+                component={TabNavigator} 
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen 
+                name='SearchReceipt' 
+                component={SearchReceipt} 
+                options={{ 
+                  title: 'Pesquise pelo código', 
+                  headerShadowVisible: false, 
+                  headerStyle: {backgroundColor: '#f5f7f9'} 
+                }}
+              />
+              <Stack.Screen 
+                name='ReceiptDetailsParticipant' 
+                component={ReceiptDetailsParticipant} 
+                options={{ 
+                  title: 'Conta geral', 
+                  headerShadowVisible: false, 
+                  headerStyle: {backgroundColor: '#f5f7f9'} 
+                }}
+              />
+              <Stack.Screen 
+                name='ReceiptDetails' 
+                component={ReceiptDetails} 
+                options={{ 
+                  title: 'Conta geral', 
+                  headerShadowVisible: false, 
+                  headerStyle: {backgroundColor: '#f5f7f9'} 
+                }}
+              />
+              <Stack.Screen 
+                name='CostParcial' 
+                component={CostParcial} 
+                options={{ 
+                  title: 'Valor do pedido', 
+                  headerShadowVisible: false, 
+                  headerStyle: {backgroundColor: '#f5f7f9'} 
+                }}
+              />
+              <Stack.Screen 
+                name='ReceiptDetailsClosed' 
+                component={ReceiptDetailsClosed} 
+                options={{ 
+                  title: 'Conta fechada', 
+                  headerShadowVisible: false, 
+                  headerStyle: {backgroundColor: '#f5f7f9'} 
+                }}
+              />
+              <Stack.Screen 
+                name='ResumeReceipt' 
+                component={ResumeReceipt} 
+                options={{ 
+                  title: 'Minha parte da conta', 
+                  headerShadowVisible: false, 
+                  headerStyle: {backgroundColor: '#f5f7f9'} 
+                }}
+              />
+              <Stack.Screen 
+                name='NewReceipt' 
+                component={NewReceipt} 
+                options={{ 
+                  title: 'Nova conta compartilhada', 
+                  headerShadowVisible: false, 
+                  headerStyle: {backgroundColor: '#f5f7f9'} 
+                }}
+              />
+              <Stack.Screen 
+                name='EditReceipt' 
+                component={EditReceipt} 
+                options={{ 
+                  title: 'Editar conta compartilhada', 
+                  headerShadowVisible: false, 
+                  headerStyle: {backgroundColor: '#f5f7f9'} 
+                }}
+              />
+              <Stack.Screen 
+                name='ShareReceipt' 
+                component={ShareReceipt} 
+                options={{ 
+                  title: 'Código de convite', 
+                  headerShadowVisible: false, 
+                  headerStyle: {backgroundColor: '#f5f7f9'} 
+                }}
+              />
+              <Stack.Screen 
+                name='Config' 
+                component={Config} 
+                options={{ 
+                  title: 'Configurações', 
+                  headerShadowVisible: false, 
+                  headerStyle: {backgroundColor: '#f5f7f9'} 
+                }}
+              />
+              <Stack.Screen 
+                name='DetailsResumeClosed' 
+                component={DetailsResumeClosed} 
+                options={{ 
+                  title: 'Detalhes da conta finalizada', 
+                  headerShadowVisible: false, 
+                  headerStyle: {backgroundColor: '#f5f7f9'} 
+                }}
+              />
             </Stack.Group>
           ) : (
             <Stack.Screen name='LoginScreen' component={AuthNavigator} options={{ headerShown: false }}/>

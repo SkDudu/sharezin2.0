@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { Actionsheet, AlertDialog, Avatar, Box, Button, FlatList, Icon, ScrollView, Stack, Text, useDisclose } from "native-base"
-import { Alert, SafeAreaView } from "react-native"
+import { useEffect, useState } from "react";
+import { Actionsheet, Avatar, Box, Button, FlatList, Icon, Image, ScrollView, Stack, Text, useDisclose } from "native-base"
+import { SafeAreaView } from "react-native"
 
 import { supabase } from "../lib/supabse"
 
@@ -19,11 +19,6 @@ export default function ReceiptDetails({ route, navigation }){
     const {isOpen, onOpen, onClose} = useDisclose()
     const [receiptId, setReceiptId] = useState()
     const [costTotal, setCostTotal] = useState<any[]>([])
-    const [costParcial, setCostParcial] = useState()
-    const [costUser, setCostUser] = useState()
-    const [costUserParcial, setCostUserParcial] = useState()
-    const [taxGarcom, setTaxGarcom] = useState()
-    const [taxCover, setTaxCover] = useState()
     const [response, setResponse] = useState<any[]>([])
     const [historictData, setHistoricData] = useState<any[]>([])
 
@@ -59,9 +54,7 @@ export default function ReceiptDetails({ route, navigation }){
         }
 
         if(data || null){
-          setResponse(data)
-          setTaxCover(data[0]?.tax_cover)
-          setTaxGarcom(data[0]?.tax_garcom)
+            setResponse(data)
         }
       }
     }
@@ -111,68 +104,12 @@ export default function ReceiptDetails({ route, navigation }){
             sum = sum+values[i]
           }
 
-          setCostParcial(parseFloat(sum))
-
           const formatter = new Intl.NumberFormat('pt-BR', {
             style: 'currency',
             currency: 'BRL',
           });
           
-          setCostTotal(formatter.format(sum));
-        }
-      }
-
-      if( RID !== null && RID !== undefined){
-        const { data, error } = await supabase
-        .from('historic')
-        .select(
-          `
-            cost_parcial
-          `
-        )
-        .eq('receipt_id', receiptId)
-        .eq('user', route.params.userId)
-
-        if(error){
-          console.log(error)
-        }
-
-        if(data == null){
-          console.log('vindo nulo o custo')
-        }
-
-        if(data || null){
-          let values = data?.map(a => a.cost_parcial);
-          let sum = 0
-          for(let i=0; i<values?.length; i++){
-            sum = sum+values[i]
-          }
-
-          setCostUserParcial(parseFloat(sum))
-
-          const formatter = new Intl.NumberFormat('pt-BR', {
-            style: 'currency',
-            currency: 'BRL',
-          });
-          
-          setCostUser(formatter.format(sum))
-        }
-      }
-    }
-
-    async function setClosedReceipt(){
-      const RID = receiptId ? receiptId : null
-      if(RID !== null && RID !== undefined){
-        const { data, error } = await supabase
-        .from('receipt')
-        .update({ status_receipt: false })
-        .eq('id', RID)
-        .select()
-
-        if(error){
-          Alert.alert(error.message)
-        }else{
-          navigation.navigate('ClosedReceipt')
+          setCostTotal(formatter.format(sum)); /* $2,500.00 */
         }
       }
     }
@@ -189,7 +126,6 @@ export default function ReceiptDetails({ route, navigation }){
     const owner_receipt = response[0]?.owner_receipt
     const close_at = response[0]?.closed_at
     const codeInvite = response[0]?.codeInvite
-    const const_total = response[0]?.const_total
     const created_at = response[0]?.created_at 
     const id = response[0]?.id 
     const restaurant_name = response[0]?.restaurant_name 
@@ -228,7 +164,7 @@ export default function ReceiptDetails({ route, navigation }){
                             <Text color={"black"} fontWeight={"medium"} fontSize={22}>Informação geral da conta</Text>
                             <Box bg={"white"} px={2} py={4} rounded={"md"} my={1} alignItems={"center"}>
                                 <Text color={"black"} fontWeight={"normal"} fontSize={14}>Seu consumo total</Text>
-                                <Text color={"black"} fontWeight={"medium"} fontSize={30}>{costUser}</Text>
+                                <Text color={"black"} fontWeight={"medium"} fontSize={30}>R$423,00</Text>
                             </Box>
                         </Stack>
                         <Stack direction={"row"} space={1} justifyContent={"space-between"}>
@@ -283,28 +219,22 @@ export default function ReceiptDetails({ route, navigation }){
                             <Box w="100%" h={60} px={2} justifyContent={"center"}>
                                 <Text fontWeight={"medium"} fontSize={20} color={"#0b0c10"}>Opções da conta</Text>
                             </Box>
-                            <Actionsheet.Item onPress={() => navigation.navigate('EditReceipt')}>
-                                <Stack direction={"row"} alignItems={"center"} space={2}>
-                                    <PencilEdit />
-                                    <Text fontWeight={"normal"} fontSize={16}>Editar informações da conta</Text>
-                                </Stack>
-                            </Actionsheet.Item>
                             <Actionsheet.Item onPress={() => navigation.navigate('ShareReceipt')}>
                                 <Stack direction={"row"} alignItems={"center"} space={2}>
                                     <Share />
                                     <Text fontWeight={"normal"} fontSize={16}>Compartilhar conta</Text>
                                 </Stack>
                             </Actionsheet.Item>
-                            <Actionsheet.Item onPress={() => navigation.navigate('ResumeReceipt', {receiptId: receiptId, userId: userId, costTotal: costUserParcial, taxCover: taxCover, taxGarcom: taxGarcom})}>
+                            <Actionsheet.Item onPress={() => navigation.navigate('ResumeReceipt')}>
                                 <Stack direction={"row"} alignItems={"center"} space={2}>
                                     <ResumeReceipt />
                                     <Text fontWeight={"normal"} fontSize={16}>Resumo da sua conta</Text>
                                 </Stack>
                             </Actionsheet.Item>
-                            <Actionsheet.Item onPress={() => setClosedReceipt()}>
+                            <Actionsheet.Item onPress={() => navigation.navigate('')}>
                                 <Stack direction={"row"} alignItems={"center"} space={2}>
                                     <Close />
-                                    <Text fontWeight={"normal"} fontSize={16} color={"#f72222"}>Encerrar a conta compartilhada</Text>
+                                    <Text fontWeight={"normal"} fontSize={16} color={"#f72222"}>Encerrar minha conta</Text>
                                 </Stack>
                             </Actionsheet.Item>
                         </Actionsheet.Content>

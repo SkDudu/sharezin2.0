@@ -9,7 +9,7 @@ import { supabase } from '../lib/supabse';
 
 export default function SearchReceipt({route, navigation}) {
   const [receiptId, setReceiptId] = useState('')
-  const [receiptName, setReceiptName] = useState('')
+  const [codeReceipt, setCodeReceipt] = useState('')
   const [receiptResponse, setReceiptResponse] = useState('')
   const [isOpen, setIsOpen] = React.useState(false);
   const onClose = () => setIsOpen(false);
@@ -19,7 +19,7 @@ export default function SearchReceipt({route, navigation}) {
     const {data, error} = await supabase
     .from('receipt')
     .select('*')
-    .eq('codeInvite', receiptName)
+    .eq('codeInvite', codeReceipt)
 
     if(data == null){
       //console.log('vindo nulo o histórico', data)
@@ -39,10 +39,11 @@ export default function SearchReceipt({route, navigation}) {
     .select() 
     .eq('user', user)
 
-    if(data == 0){
-      setIsOpen(!isOpen)
-    } else if(data[0].is_owner == true){
+    if(data[0].is_owner == true && data[0].receipt_id == receiptId){
       Alert.alert('Você já é dono. Volte para o início para entrar na sua conta.')
+      //console.log(data)
+    } else{
+      setIsOpen(!isOpen)
     }
   }
 
@@ -71,8 +72,8 @@ export default function SearchReceipt({route, navigation}) {
         <Stack direction={"column"} mt={2} mx={2}>
           <Text color={"#575960"} fontWeight={"normal"} fontSize={16}>Para encontrar alguma conta de seus amigos, Insira o código que um de seus amigos compartilhou!</Text>
           <Input 
-            value={receiptName} 
-            onChangeText={(text) => setReceiptName(text)}
+            value={codeReceipt} 
+            onChangeText={(text) => setCodeReceipt(text)}
             InputLeftElement={<Icon as={<Lupe />} 
             ml="2"/>} 
             placeholder="Pesquisar" 

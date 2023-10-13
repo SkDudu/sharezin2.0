@@ -26,38 +26,40 @@ export default function Home({navigation}){
 
   useEffect(()=>{
     const user = userId ? userId : null
-    if(user !== null){
-      async function getReceiptsByUserId(){
-        const { data, error } = await supabase
-        .from('receipt')
-        .select()
-        .eq('user', user)
-    
-        if(data !== null){
-          setResponse(data)
+        if(user !== null){
+          async function getReceiptsByUserId(){
+            const { data, error } = await supabase
+            .from('receipt')
+            .select()
+            .eq('user', user)
+            .neq('status_receipt', false)
+        
+            if(data !== null){
+              setResponse(data)
+            }
+          }
+
+          async function getReceiptsByUserIdParticipant(){
+            const { data, error } = await supabase
+            .from('participant')
+            .select()
+            .eq('user', user)
+            .neq('is_owner', true)
+        
+            if(data !== null){
+              const response = await supabase
+              .from('receipt')
+              .select()
+              .eq('id', data[0].receipt_id)
+
+              setResponseParticipant(response.data)
+              //console.log('reponseConvidado', response.data[0]?.created_at)
+            }
+          }
+          
+          getReceiptsByUserId()
+          getReceiptsByUserIdParticipant()
         }
-      }
-
-      async function getReceiptsByUserIdParticipant(){
-        const { data, error } = await supabase
-        .from('participant')
-        .select()
-        .eq('user', user)
-    
-        if(data !== null){
-          const response = await supabase
-          .from('receipt')
-          .select()
-          .eq('id', data[0].receipt_id)
-
-          setResponse(response.data)
-          console.log('reponseConvidado', response.data)
-        }
-      }
-
-      getReceiptsByUserId()
-      getReceiptsByUserIdParticipant()
-    }
 
     getSession()
   }, [userId])
@@ -85,7 +87,7 @@ export default function Home({navigation}){
                       <Receipt />
                       <Text color={"#000"} fontSize={16} fontWeight={"medium"} pl={2}>{item.name_receipt}</Text>
                     </Stack>
-                    <Text>{item.created_At}</Text>
+                    <Text color={"#000"}>{item.created_at}</Text>
                   </Stack>
                   <Stack direction={"row"} justifyContent={"space-between"} alignItems={"center"}mb={2}>
                     <Stack direction={'row'} alignItems={"center"}>
@@ -98,7 +100,37 @@ export default function Home({navigation}){
                       <Text>{item.status_receipt ? <Text color={"green.200"}>Aberta</Text> : <Text color={"green.200"}>Aberta</Text>}</Text>
                     </Box>
                     <Box bgColor={'coolGray.700'} px={3} rounded={'xl'}>
-                      <Text>{item.status_receipt ? <Text color={'coolGray.200'}>Dono</Text> : <Text color={"green.200"}>Convidado</Text>}</Text>
+                      <Text color={'coolGray.200'}>Dono</Text>
+                    </Box>
+                  </Stack>
+                </Stack>
+              </Link>
+            </Box>
+            }
+          />
+          <FlatList data={responseParticipant} keyExtractor={(item) => item?.id} renderItem={({item})=>
+            <Box bgColor={"#ececec"} mt={4} rounded={'md'} px={2} py={2}>
+              <Link onPress={() => navigation.navigate('ReceiptDetailsParticipant', {receiptId: item.id, userId: userId})}>
+                <Stack direction={"column"} w={"full"}>
+                  <Stack direction={"row"} justifyContent={"space-between"} alignItems={"center"} mb={1}>
+                    <Stack direction={'row'} alignItems={"center"}>
+                      <Receipt />
+                      <Text color={"#000"} fontSize={16} fontWeight={"medium"} pl={2}>{item.name_receipt}</Text>
+                    </Stack>
+                    <Text color={"#000"}>{item.created_at}</Text>
+                  </Stack>
+                  <Stack direction={"row"} justifyContent={"space-between"} alignItems={"center"}mb={2}>
+                    <Stack direction={'row'} alignItems={"center"}>
+                      <Pin />
+                      <Text color={"#575960"} fontSize={14} fontWeight={"normal"} pl={1}>{item.restaurant_name}</Text>
+                    </Stack>
+                  </Stack>
+                  <Stack direction={"row"}>
+                    <Box bgColor={"green.600"} px={3} rounded={'xl'} mr={2}>
+                      <Text>{item.status_receipt ? <Text color={"green.200"}>Aberta</Text> : <Text color={"green.200"}>Aberta</Text>}</Text>
+                    </Box>
+                    <Box bgColor={'coolGray.200'} px={3} rounded={'xl'}>
+                      <Text color={"coolGray.700"}>Convidado</Text>
                     </Box>
                   </Stack>
                 </Stack>
