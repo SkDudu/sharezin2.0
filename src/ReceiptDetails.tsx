@@ -26,6 +26,7 @@ export default function ReceiptDetails({ route, navigation }){
     const [taxCover, setTaxCover] = useState()
     const [response, setResponse] = useState<any[]>([])
     const [historictData, setHistoricData] = useState<any[]>([])
+    const [username, setUsername] = useState()
 
     async function getReceiptIdFromParams(){
       const R_id = route.params.receiptId || null
@@ -84,6 +85,11 @@ export default function ReceiptDetails({ route, navigation }){
       }
     }
 
+    const formatter = new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    });
+
     async function gethistoricsCostParcialByReceiptId(){
       const RID = receiptId ? receiptId : null
       if( RID !== null && RID !== undefined){
@@ -112,12 +118,6 @@ export default function ReceiptDetails({ route, navigation }){
           }
 
           setCostParcial(parseFloat(sum))
-
-          const formatter = new Intl.NumberFormat('pt-BR', {
-            style: 'currency',
-            currency: 'BRL',
-          });
-          
           setCostTotal(formatter.format(sum));
         }
       }
@@ -177,7 +177,22 @@ export default function ReceiptDetails({ route, navigation }){
       }
     }
 
+    async function subshistorics(){
+      supabase
+      .channel('historic')
+      .on(
+        'postgres_changes',
+        {event: '*', schema: 'public'},
+        (payload) => {
+          gethistoricsByReceiptId(),
+          gethistoricsCostParcialByReceiptId()
+        }
+      )
+      .subscribe()
+    }
+
     useEffect(()=>{
+      subshistorics()
       getReceiptIdFromParams()
       getReceiptById()
       getParticipantOwner()
@@ -204,14 +219,11 @@ export default function ReceiptDetails({ route, navigation }){
                 <Box bgColor={"#f5f7f9"} h={'full'}>
                     <Box m={2} p={2} bgColor={"#0b0c10"} rounded={"md"}>
                         <Stack direction={"column"}>
-                            <Stack direction={"row"} justifyContent={"space-between"}>
-                                <Stack direction={"column"}>
-                                    <Text color={"white"} fontWeight={"medium"} fontSize={22}>{name_receipt}</Text>
-                                    <Text color={"white"} fontWeight={"normal"} fontSize={14}>Responsável: {owner_receipt}</Text>
-                                </Stack>
-                                <Button bgColor={"#0b0c109-"} onPress={onOpen}>
-                                    <Dots />
-                                </Button>
+                            <Stack direction={"row"} justifyContent={"space-between"} alignItems={"center"}>
+                              <Text color={"white"} fontWeight={"medium"} fontSize={22}>{name_receipt}</Text>
+                              <Button bgColor={"#0b0c109-"} onPress={onOpen}>
+                                  <Dots />
+                              </Button>
                             </Stack>
                             <Stack direction={"column"} alignItems={"center"} mt={6}>
                                 <Text color={"white"} fontWeight={"normal"} fontSize={14}>Custo total da conta compartilhada</Text>
@@ -260,7 +272,7 @@ export default function ReceiptDetails({ route, navigation }){
                               <Stack direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
                                 <Stack direction={"row"} alignItems={"center"} space={2}>
                                   <Avatar size={8} source={{uri: "https://images.unsplash.com/photo-1474447976065-67d23accb1e3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1285&q=80"}} />
-                                  <Text color={"black"} fontWeight={"medium"} fontSize={18}>Nome do usuário</Text>
+                                  <Text color={"black"} fontWeight={"medium"} fontSize={18}>{item.username}</Text>
                                 </Stack>
                                 <Stack direction={"row"} alignItems={"center"} space={1}>
                                   <Clock size={8} />
@@ -270,7 +282,7 @@ export default function ReceiptDetails({ route, navigation }){
 
                               <Stack direction={"row"} alignItems={"center"} space={2} mt={2} justifyContent={"space-between"}>
                                 <Text color={"black"} fontWeight={"normal"} fontSize={16}>{item.product_name}</Text>
-                                <Text color={"black"} fontWeight={"normal"} fontSize={16}>R$ {item.cost_parcial}</Text>
+                                <Text color={"black"} fontWeight={"normal"} fontSize={16}>{formatter.format(item.cost_parcial)}</Text>
                               </Stack>
                             </Box>
                               }
@@ -289,7 +301,7 @@ export default function ReceiptDetails({ route, navigation }){
                                     <Text fontWeight={"normal"} fontSize={16}>Editar informações da conta</Text>
                                 </Stack>
                             </Actionsheet.Item>
-                            <Actionsheet.Item onPress={() => navigation.navigate('ShareReceipt')}>
+                            <Actionsheet.Item onPress={() => navigation.navigate('ShareReceipt', {code: codeInvite, nameReceipt: name_receipt})}>
                                 <Stack direction={"row"} alignItems={"center"} space={2}>
                                     <Share />
                                     <Text fontWeight={"normal"} fontSize={16}>Compartilhar conta</Text>

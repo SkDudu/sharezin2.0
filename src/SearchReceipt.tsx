@@ -39,7 +39,7 @@ export default function SearchReceipt({route, navigation}) {
     .select() 
     .eq('user', user)
 
-    if(data[0].is_owner == true && data[0].receipt_id == receiptId){
+    if(data[0]?.is_owner == true && data[0].receipt_id == receiptId){
       Alert.alert('Você já é dono. Volte para o início para entrar na sua conta.')
       //console.log(data)
     } else{
@@ -62,7 +62,7 @@ export default function SearchReceipt({route, navigation}) {
         Alert.alert('Cadastro na conta deu erro. Tente novamente entrar.')
         console.log(error)
       }else{
-        navigation.navigate('ReceiptDetails', {userId: route.params.userId, receiptId: receiptId})
+        navigation.navigate('Home')
       }
   }
 
@@ -89,8 +89,8 @@ export default function SearchReceipt({route, navigation}) {
         <FlatList data={receiptResponse} keyExtractor={(item) => item?.id} renderItem={({item}) =>
             <Box bgColor={"#ececec"} mt={4} mx={2} rounded={'md'} px={2} py={2}>
               <Link onPress={() => getParticipant({receiptId: item.id})}>
-                <Stack direction={"column"}>
-                  <Stack direction={"row"} justifyContent={"space-between"} alignItems={"center"} mb={1}>
+                <Stack direction={"column"} w={'full'}>
+                  <Stack direction={"row"} alignItems={"center"} justifyContent={"space-between"} mb={1}>
                     <Stack direction={'row'} alignItems={"center"}>
                       <Receipt />
                       <Text color={"#000"} fontSize={16} fontWeight={"medium"} pl={2}>{item.name_receipt}</Text>

@@ -12,7 +12,7 @@ export default function ResumeReceipt({route, navigation}){
     const [isOpen, setIsOpen] = React.useState(false);
     const onClose = () => setIsOpen(false);
     const cancelRef = React.useRef(null);
-    //console.log(route)
+    console.log(route)
     const [receiptId, setReceiptId] = useState()
     const [userId, setuserId] = useState()
     const [totalCostNumber, setCostTotalNumber] = useState()
@@ -20,6 +20,11 @@ export default function ResumeReceipt({route, navigation}){
     const [totalCostFormat, setCostFormat] = useState()
     const [response, setResponse] = useState<any[]>([])
     const [historicData, setHistoricData] = useState<any[]>([])
+
+    const formatter = new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL',
+    });
     
     async function getReceiptIdFromParams(){
         const R_id = route.params.receiptId || null
@@ -30,18 +35,19 @@ export default function ResumeReceipt({route, navigation}){
 
     async function calcCostTotalWithTaxes(){
         const costParcial = route.params.costTotal
-        let taxCover = route.params.taxCover
-        let taxGarcom = route.params.taxGarcom / 100
 
-        let totalCost = costParcial + (costParcial * taxGarcom) + taxCover
-        const formatter = new Intl.NumberFormat('pt-BR', {
-            style: 'currency',
-            currency: 'BRL',
-        });
-          
-        setCostTotal(formatter.format(totalCost)); /* $2,500.00 */
-        setCostFormat(formatter.format(costParcial));
-        setCostTotalNumber(totalCost)
+        if(costParcial == 0){
+            setCostTotal(formatter.format(costParcial));
+        } else {
+            let taxCover = route.params.taxCover
+            let taxGarcom = route.params.taxGarcom / 100
+
+            let totalCost = costParcial + (costParcial * taxGarcom) + taxCover
+            
+            setCostTotal(formatter.format(totalCost)); /* $2,500.00 */
+            setCostFormat(formatter.format(costParcial));
+            setCostTotalNumber(totalCost)
+        }
     }
     
     async function getReceiptById(){  
@@ -120,7 +126,7 @@ export default function ResumeReceipt({route, navigation}){
     }, [receiptId])
 
     const name_receipt = response[0]?.name_receipt
-    const tax_cover = response[0]?.tax_cover
+    const tax_cover = formatter.format(response[0]?.tax_cover)
     const tax_garcom = response[0]?.tax_garcom
 
     return(
@@ -157,7 +163,7 @@ export default function ResumeReceipt({route, navigation}){
                                         <Mic />
                                         <Text fontSize={16} fontWeight={"normal"}>Cover</Text>
                                     </Stack>
-                                    <Text fontSize={16} fontWeight={"normal"}>R$ {tax_cover}</Text>
+                                    <Text fontSize={16} fontWeight={"normal"}>{tax_cover}</Text>
                                 </Stack>
                             </Box>
                             <Box bgColor={'#0b0c10'} mt={2} p={2} rounded={"md"} borderColor={"#eaeaea"}>
@@ -183,7 +189,7 @@ export default function ResumeReceipt({route, navigation}){
                                                     <Text fontSize={14} fontWeight={"normal"}>{item.product_name}</Text>
                                                 </Stack>
                                             </Stack>
-                                            <Text fontSize={16} fontWeight={"normal"}>R$ {item.cost_parcial}</Text>
+                                            <Text fontSize={16} fontWeight={"normal"}>{formatter.format(item.cost_parcial)}</Text>
                                         </Stack>
                                     </Box>
                                     }/>

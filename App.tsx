@@ -28,6 +28,7 @@ import NewReceipt from "./src/NewReceipt";
 import EditReceipt from "./src/EditReceipt";
 import ShareReceipt from "./src/ShareReceipt";
 import Config from "./src/Config";
+import costParcialParticipant from "./src/costParcialParticipant";
 
 const config: INativebaseConfig = {
   // rest of the config keys like dependencies can go here
@@ -206,6 +207,15 @@ export default function App() {
                 component={DetailsResumeClosed} 
                 options={{ 
                   title: 'Detalhes da conta finalizada', 
+                  headerShadowVisible: false, 
+                  headerStyle: {backgroundColor: '#f5f7f9'} 
+                }}
+              />
+              <Stack.Screen 
+                name='CostParcialParticipant' 
+                component={costParcialParticipant} 
+                options={{ 
+                  title: 'Valor do pedido',  
                   headerShadowVisible: false, 
                   headerStyle: {backgroundColor: '#f5f7f9'} 
                 }}

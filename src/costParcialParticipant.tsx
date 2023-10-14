@@ -3,8 +3,8 @@ import { Box, Button, Input, Stack, Text } from "native-base"
 import { Alert, SafeAreaView } from "react-native"
 import { supabase } from "../lib/supabse"
 
-export default function CostParcial({route, navigation}){
-    console.log('Id da receita vindo pela rota', route)
+export default function CostParcialParticipant({route, navigation}){
+    //console.log('Id da receita vindo pela rota', route)
     const [costParticipant, setCostParticipant] = useState('')
     const [username, setUsername] = useState('')
     const [productName, setProductName] = useState('')
@@ -55,7 +55,7 @@ export default function CostParcial({route, navigation}){
         }
 
         if(!error){
-            navigation.navigate('ReceiptDetails', {receiptId: route.params.receiptId, userId: route.params.userId})
+            navigation.navigate('ReceiptDetailsParticipant', {receiptId: route.params.receiptId, userId: route.params.userId})
         }
     }
 

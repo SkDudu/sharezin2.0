@@ -21,7 +21,7 @@ export default function Home({navigation}){
   async function getSession(){ 
     const { data: { user } } = await supabase.auth.getUser()
     setUserId(user?.id)
-    //console.log('seesion user id: ', user?.id)
+    //console.log('seesion user: ', user)
   }
 
   useEffect(()=>{
@@ -56,7 +56,22 @@ export default function Home({navigation}){
               //console.log('reponseConvidado', response.data[0]?.created_at)
             }
           }
+
+          async function subsReceipt(){
+            supabase
+            .channel('receipt')
+            .on(
+              'postgres_changes',
+              {event: '*', schema: 'public'},
+              (payload) => {
+                getReceiptsByUserId()
+                getReceiptsByUserIdParticipant()
+              }
+            )
+            .subscribe()
+          }
           
+          subsReceipt()
           getReceiptsByUserId()
           getReceiptsByUserIdParticipant()
         }

@@ -132,9 +132,6 @@ export default function ReceiptDetailsClosed({route, navigation}){
                                     <Text color={"white"} fontWeight={"medium"} fontSize={22}>{name_receipt}</Text>
                                     <Text color={"white"} fontWeight={"normal"} fontSize={14}>{owner_receipt}</Text>
                                 </Stack>
-                                <Button bgColor={"#0b0c10"} onPress={() => navigation.navigate('')}>
-                                    <Dots />
-                                </Button>
                             </Stack>
                             <Stack direction={"column"} alignItems={"center"} mt={6}>
                                 <Text color={"white"} fontWeight={"normal"} fontSize={14}>Custo todal da conta compartilhada</Text>

@@ -21,6 +21,8 @@ export default function NewReceipt({route, navigation}){
     const [taxGarcom, setTaxGarcom] = useState('')
     const [taxCover, setTaxCover] = useState('')
     const [CodeInvite, setCodeInvite] = useState('')
+    
+    const date = new Date()
 
     async function getSession(){ 
     const { data: { user } } = await supabase.auth.getUser()
@@ -40,6 +42,7 @@ export default function NewReceipt({route, navigation}){
             const_total: 0,
             status_receipt: true,
             user: userId,
+            created_at: date.toLocaleDateString()
         })
         .select()
         
@@ -51,15 +54,16 @@ export default function NewReceipt({route, navigation}){
                 cost: 0,
                 receipt_id: data[0].id,
                 is_closed: false,
-                is_owner: true
+                is_owner: true,
+                created_at: date.toLocaleDateString(),
+                updated_at: date.toLocaleDateString()
             })
+            navigation.navigate('Home')
         }
 
         if(error){
             console.log(error)
         }
-
-        navigation.navigate('Home')
     }
 
     useEffect(()=>{
