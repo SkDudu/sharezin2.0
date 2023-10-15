@@ -71,7 +71,7 @@ export default function CostParcialParticipant({route, navigation}){
                     <Box bgColor={"#0b0c10"} mx={2} mt={2} rounded={"md"} p={2}>
                         <Stack direction={"column"} alignItems={"center"}>
                             <Text color={"white"} fontWeight={"normal"} fontSize={14}>Sua parte da conta compartilhada até agora</Text>
-                            <Text color={"white"} fontWeight={"medium"} fontSize={22}>R$ 0</Text>
+                            <Text color={"white"} fontWeight={"medium"} fontSize={22}>{route.params.costTotal}</Text>
                         </Stack>
                     </Box>
 

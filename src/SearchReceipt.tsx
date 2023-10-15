@@ -15,6 +15,8 @@ export default function SearchReceipt({route, navigation}) {
   const onClose = () => setIsOpen(false);
   const cancelRef = React.useRef(null);
 
+  const date = new Date()
+
   async function getReceiptByCodeInvite(){
     const {data, error} = await supabase
     .from('receipt')
@@ -55,7 +57,8 @@ export default function SearchReceipt({route, navigation}) {
         cost: 0,
         receipt_id: receiptId,
         is_closed: false,
-        is_owner: false
+        is_owner: false,
+        updated_at: date.toLocaleDateString()
       })
 
       if(error){

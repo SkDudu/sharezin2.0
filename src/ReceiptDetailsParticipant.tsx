@@ -229,7 +229,7 @@ export default function ReceiptDetailsParticipant({ route, navigation }){
                                 <Text color={"white"} fontWeight={"normal"} fontSize={14}>Custo total da conta compartilhada</Text>
                                 <Text color={"white"} fontWeight={"medium"} fontSize={30}>{costTotal}</Text>
                             </Stack>
-                            <Button leftIcon={<Icon as={<Plus />}/>} bgColor={"#fff"} h={"56px"} borderRadius={6} mt={4} onPress={() => navigation.navigate('CostParcialParticipant', {receiptId: receiptId, userId: route.params.userId})}>
+                            <Button leftIcon={<Icon as={<Plus />}/>} bgColor={"#fff"} h={"56px"} borderRadius={6} mt={4} onPress={() => navigation.navigate('CostParcialParticipant', {receiptId: receiptId, userId: route.params.userId, costTotal: costTotal})}>
                                 <Text color={'#000'} fontWeight={"normal"} fontSize={16}>Adicionar valor</Text>
                             </Button>
                         </Stack>
