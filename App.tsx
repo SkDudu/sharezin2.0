@@ -74,7 +74,7 @@ function AuthNavigator(){
 
 function TabNavigator(){
   return(
-    <Tab.Navigator initialRouteName='Home'>
+    <Tab.Navigator initialRouteName='Home' screenOptions={{tabBarActiveTintColor: '#0c0b10'}}>
       <Tab.Screen name='Home' component={Home} 
         options={{ headerShown: false, headerShadowVisible: false, tabBarIcon: ({ color }) => <HomeIcon width={24} height= {24} fill={color}/> }}
       />

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Alert, SafeAreaView, Pressable, View } from 'react-native';
-import { Box, Fab, FlatList, Icon, Link, Stack, Text } from 'native-base';
+import { Box, Fab, FlatList, HStack, Icon, Link, Skeleton, Stack, Text, VStack } from 'native-base';
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useRoute } from "@react-navigation/native";
 
@@ -10,6 +10,7 @@ import tw from 'twrnc';
 
 import Lupe from './../assets/icons/Lupe.svg'
 import Receipt from "./../assets/icons/ReceiptOutline.svg"
+import ReceiptGray from "./../assets/icons/ReceiptGray.svg"
 import Pin from '../assets/icons/MapPin.svg'
 import PlusWhite from './../assets/icons/PlusWhite.svg'
 
@@ -24,6 +25,33 @@ export default function Home({navigation}){
     //console.log('seesion user: ', user)
   }
 
+  const EmptyReceipt = () => {
+    return (
+      <Box bgColor={"#ececec"} mt={4} rounded={'md'} px={2} py={2}>
+        <Stack direction={'column'} alignItems={"center"}>
+          <ReceiptGray />
+          <Text color="#717171" fontSize={14} fontWeight={"regular"} pl={2}>Você não possui nenhuma conta em aberto.</Text>
+        </Stack>
+      </Box>
+    )
+  }
+
+  const Loading = () => {
+    return (
+      <VStack>
+        <Skeleton h="24" rounded={'md'} borderColor="coolGray.100" endColor="warmGray.100"/>
+        <HStack>
+          <Skeleton borderColor="coolGray.200" endColor="warmGray.300" size="8" rounded="md" mt="-85px" ml={2} />
+          <Skeleton.Text endColor="warmGray.300" lines={1} alignItems="center"  px="16" mt="-80px" ml="-50px"/>
+        </HStack>
+        <HStack space={2} mt="-40px">
+          <Skeleton endColor="warmGray.300" w={"24"} h={8} ml={2} rounded="full" />
+          <Skeleton endColor="warmGray.300" w={"24"} h={8} ml={2} rounded="full" />
+        </HStack>
+      </VStack>
+    )
+  }
+
   useEffect(()=>{
     const user = userId ? userId : null
         if(user !== null){
@@ -36,6 +64,7 @@ export default function Home({navigation}){
         
             if(data !== null){
               setResponse(data)
+              console.log(response)
             }
           }
 
@@ -93,66 +122,65 @@ export default function Home({navigation}){
         </Pressable>
         <View style={tw `pt-2`}>
           <Text style={tw `text-[#0b0c10] font-medium text-xl`}>Minhas contas</Text>
-          <FlatList data={response} keyExtractor={(item) => item?.id} renderItem={({item})=>
-            <Box bgColor={"#ececec"} mt={4} rounded={'md'} px={2} py={2}>
-              <Link onPress={() => navigation.navigate('ReceiptDetails', {receiptId: item.id, userId: userId})}>
-                <Stack direction={"column"} w={"full"}>
-                  <Stack direction={"row"} justifyContent={"space-between"} alignItems={"center"} mb={1}>
-                    <Stack direction={'row'} alignItems={"center"}>
-                      <Receipt />
-                      <Text color={"#000"} fontSize={16} fontWeight={"medium"} pl={2}>{item.name_receipt}</Text>
+          { response == null && responseParticipant == null ? (
+            <EmptyReceipt />
+          ) : (
+            <>
+            <FlatList data={response} keyExtractor={(item) => item?.id} renderItem={({ item }) => <Box bgColor={"#ececec"} mt={4} rounded={'md'} px={2} py={2}>
+                <Link onPress={() => navigation.navigate('ReceiptDetails', { receiptId: item.id, userId: userId })}>
+                  <Stack direction={"column"} w={"full"}>
+                    <Stack direction={"row"} justifyContent={"space-between"} alignItems={"center"} mb={1}>
+                      <Stack direction={'row'} alignItems={"center"}>
+                        <Receipt />
+                        <Text color={"#000"} fontSize={16} fontWeight={"medium"} pl={2}>{item.name_receipt}</Text>
+                      </Stack>
+                      <Text color={"#000"}>{item.created_at}</Text>
                     </Stack>
-                    <Text color={"#000"}>{item.created_at}</Text>
-                  </Stack>
-                  <Stack direction={"row"} justifyContent={"space-between"} alignItems={"center"}mb={2}>
-                    <Stack direction={'row'} alignItems={"center"}>
-                      <Pin />
-                      <Text color={"#575960"} fontSize={14} fontWeight={"normal"} pl={1}>{item.restaurant_name}</Text>
+                    <Stack direction={"row"} justifyContent={"space-between"} alignItems={"center"} mb={2}>
+                      <Stack direction={'row'} alignItems={"center"}>
+                        <Pin />
+                        <Text color={"#575960"} fontSize={14} fontWeight={"normal"} pl={1}>{item.restaurant_name}</Text>
+                      </Stack>
                     </Stack>
-                  </Stack>
-                  <Stack direction={"row"}>
-                    <Box bgColor={"green.600"} px={3} rounded={'xl'} mr={2}>
-                      <Text>{item.status_receipt ? <Text color={"green.200"}>Aberta</Text> : <Text color={"green.200"}>Aberta</Text>}</Text>
-                    </Box>
-                    <Box bgColor={'coolGray.700'} px={3} rounded={'xl'}>
-                      <Text color={'coolGray.200'}>Dono</Text>
-                    </Box>
-                  </Stack>
-                </Stack>
-              </Link>
-            </Box>
-            }
-          />
-          <FlatList data={responseParticipant} keyExtractor={(item) => item?.id} renderItem={({item})=>
-            <Box bgColor={"#ececec"} mt={4} rounded={'md'} px={2} py={2}>
-              <Link onPress={() => navigation.navigate('ReceiptDetailsParticipant', {receiptId: item.id, userId: userId})}>
-                <Stack direction={"column"} w={"full"}>
-                  <Stack direction={"row"} justifyContent={"space-between"} alignItems={"center"} mb={1}>
-                    <Stack direction={'row'} alignItems={"center"}>
-                      <Receipt />
-                      <Text color={"#000"} fontSize={16} fontWeight={"medium"} pl={2}>{item.name_receipt}</Text>
-                    </Stack>
-                    <Text color={"#000"}>{item.created_at}</Text>
-                  </Stack>
-                  <Stack direction={"row"} justifyContent={"space-between"} alignItems={"center"}mb={2}>
-                    <Stack direction={'row'} alignItems={"center"}>
-                      <Pin />
-                      <Text color={"#575960"} fontSize={14} fontWeight={"normal"} pl={1}>{item.restaurant_name}</Text>
+                    <Stack direction={"row"}>
+                      <Box bgColor={"green.600"} px={3} rounded={'xl'} mr={2}>
+                        <Text>{item.status_receipt ? <Text color={"green.200"}>Aberta</Text> : <Text color={"green.200"}>Aberta</Text>}</Text>
+                      </Box>
+                      <Box bgColor={'coolGray.700'} px={3} rounded={'xl'}>
+                        <Text color={'coolGray.200'}>Dono</Text>
+                      </Box>
                     </Stack>
                   </Stack>
-                  <Stack direction={"row"}>
-                    <Box bgColor={"green.600"} px={3} rounded={'xl'} mr={2}>
-                      <Text>{item.status_receipt ? <Text color={"green.200"}>Aberta</Text> : <Text color={"green.200"}>Aberta</Text>}</Text>
-                    </Box>
-                    <Box bgColor={'coolGray.200'} px={3} rounded={'xl'}>
-                      <Text color={"coolGray.700"}>Convidado</Text>
-                    </Box>
+                </Link>
+              </Box>} /><FlatList data={responseParticipant} keyExtractor={(item) => item?.id} renderItem={({ item }) => <Box bgColor={"#ececec"} mt={4} rounded={'md'} px={2} py={2}>
+                <Link onPress={() => navigation.navigate('ReceiptDetailsParticipant', { receiptId: item.id, userId: userId })}>
+                  <Stack direction={"column"} w={"full"}>
+                    <Stack direction={"row"} justifyContent={"space-between"} alignItems={"center"} mb={1}>
+                      <Stack direction={'row'} alignItems={"center"}>
+                        <Receipt />
+                        <Text color={"#000"} fontSize={16} fontWeight={"medium"} pl={2}>{item.name_receipt}</Text>
+                      </Stack>
+                      <Text color={"#000"}>{item.created_at}</Text>
+                    </Stack>
+                    <Stack direction={"row"} justifyContent={"space-between"} alignItems={"center"} mb={2}>
+                      <Stack direction={'row'} alignItems={"center"}>
+                        <Pin />
+                        <Text color={"#575960"} fontSize={14} fontWeight={"normal"} pl={1}>{item.restaurant_name}</Text>
+                      </Stack>
+                    </Stack>
+                    <Stack direction={"row"}>
+                      <Box bgColor={"green.600"} px={3} rounded={'xl'} mr={2}>
+                        <Text>{item.status_receipt ? <Text color={"green.200"}>Aberta</Text> : <Text color={"green.200"}>Aberta</Text>}</Text>
+                      </Box>
+                      <Box bgColor={'coolGray.200'} px={3} rounded={'xl'}>
+                        <Text color={"coolGray.700"}>Convidado</Text>
+                      </Box>
+                    </Stack>
                   </Stack>
-                </Stack>
-              </Link>
-            </Box>
-            }
-          />
+                </Link>
+              </Box>} />
+              </>
+          )}
         </View>
       </View>
     </SafeAreaView>

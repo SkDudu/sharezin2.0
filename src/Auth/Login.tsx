@@ -60,6 +60,7 @@ export default function Login({navigation}){
                                     borderColor={"#eaeaea"} 
                                     bgColor={"white"} 
                                     mb={2}
+                                    inputMode="email"
                                 />
                                 <Input 
                                     type={show ? "text" : "password"}

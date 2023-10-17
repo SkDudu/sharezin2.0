@@ -72,6 +72,7 @@ export default function ReceiptDetailsParticipant({ route, navigation }){
         .from('historic')
         .select('*')
         .eq('receipt_id', receiptId)
+        .order('id', { ascending: false })
 
         if(data == null){
           console.log('vindo nulo o histórico', data)
@@ -161,12 +162,11 @@ export default function ReceiptDetailsParticipant({ route, navigation }){
       const user = route.params.userId
       const RID = receiptId ? receiptId : null
       if(RID !== null && RID !== undefined){
-        const { data, error } = await supabase
+        const { error } = await supabase
         .from('participant')
         .update({ is_closed: true })
-        .eq('id', RID)
+        .eq('receipt_id', RID)
         .eq('user', user)
-        .select()
 
         if(error){
           Alert.alert(error.message)
@@ -229,7 +229,7 @@ export default function ReceiptDetailsParticipant({ route, navigation }){
                                 <Text color={"white"} fontWeight={"normal"} fontSize={14}>Custo total da conta compartilhada</Text>
                                 <Text color={"white"} fontWeight={"medium"} fontSize={30}>{costTotal}</Text>
                             </Stack>
-                            <Button leftIcon={<Icon as={<Plus />}/>} bgColor={"#fff"} h={"56px"} borderRadius={6} mt={4} onPress={() => navigation.navigate('CostParcialParticipant', {receiptId: receiptId, userId: route.params.userId, costTotal: costTotal})}>
+                            <Button leftIcon={<Icon as={<Plus />}/>} bgColor={"#fff"} h={"56px"} borderRadius={6} mt={4} onPress={() => navigation.navigate('CostParcialParticipant', {receiptId: receiptId, userId: route.params.userId, costTotal: costUser})}>
                                 <Text color={'#000'} fontWeight={"normal"} fontSize={16}>Adicionar valor</Text>
                             </Button>
                         </Stack>

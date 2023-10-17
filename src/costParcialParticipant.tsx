@@ -11,6 +11,8 @@ export default function CostParcialParticipant({route, navigation}){
     const [costProduct, setCostProducte] = useState('')
 
     const date = new Date()
+    const hour = date.getHours();
+    const minute = date.getMinutes();
 
     async function getUserInfo(){
         const {data, error} = await supabase
@@ -46,7 +48,7 @@ export default function CostParcialParticipant({route, navigation}){
             receipt_id: route.params.receiptId,
             cost_parcial: costProduct,
             product_name: productName,
-            created_at: date.toLocaleDateString(),
+            created_at: (`${hour}:${minute}`),
             username: username
         })
 

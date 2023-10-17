@@ -44,8 +44,8 @@ export default function Profile({navigation}){
 
     return(
         <SafeAreaView>
-            <Box bgColor={"#f5f7f9"} mx={2}>
-                <Stack direction={"column"} justifyContent={"space-between"} h={"full"}>
+            <Box bgColor={"#f5f7f9"} h={'full'}>
+                <Stack direction={"column"} justifyContent={"space-between"} h={"full"} mx={2}>
                     <Stack direction={"column"} space={2}>
                         <Text fontWeight={"medium"} fontSize={24} mt={4}>Perfil</Text>
                         <Stack direction={"row"} space={2} mt={4}>

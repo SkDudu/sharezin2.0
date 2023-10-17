@@ -26,7 +26,11 @@ export default function ReceiptDetails({ route, navigation }){
     const [taxCover, setTaxCover] = useState()
     const [response, setResponse] = useState<any[]>([])
     const [historictData, setHistoricData] = useState<any[]>([])
-    const [username, setUsername] = useState()
+
+    const date = new Date()
+    const hour = date.getHours();
+    const minute = date.getMinutes();
+    const timeClosed = (`${date.toLocaleDateString()} às ${hour}:${minute}`)
 
     async function getReceiptIdFromParams(){
       const R_id = route.params.receiptId || null
@@ -74,6 +78,7 @@ export default function ReceiptDetails({ route, navigation }){
         .from('historic')
         .select('*')
         .eq('receipt_id', receiptId)
+        .order('id', { ascending: false })
 
         if(data == null){
           console.log('vindo nulo o histórico', data)
@@ -163,11 +168,10 @@ export default function ReceiptDetails({ route, navigation }){
     async function setClosedReceipt(){
       const RID = receiptId ? receiptId : null
       if(RID !== null && RID !== undefined){
-        const { data, error } = await supabase
+        const { error } = await supabase
         .from('receipt')
-        .update({ status_receipt: false })
+        .update({ status_receipt: false, closed_at:timeClosed })
         .eq('id', RID)
-        .select()
 
         if(error){
           Alert.alert(error.message)
@@ -229,7 +233,7 @@ export default function ReceiptDetails({ route, navigation }){
                                 <Text color={"white"} fontWeight={"normal"} fontSize={14}>Custo total da conta compartilhada</Text>
                                 <Text color={"white"} fontWeight={"medium"} fontSize={30}>{costTotal}</Text>
                             </Stack>
-                            <Button leftIcon={<Icon as={<Plus />}/>} bgColor={"#fff"} h={"56px"} borderRadius={6} mt={4} onPress={() => navigation.navigate('CostParcial', {receiptId: receiptId, userId: userId, costTotal: costTotal})}>
+                            <Button leftIcon={<Icon as={<Plus />}/>} bgColor={"#fff"} h={"56px"} borderRadius={6} mt={4} onPress={() => navigation.navigate('CostParcial', {receiptId: receiptId, userId: userId, costTotal: costUser})}>
                                 <Text color={'#000'} fontWeight={"normal"} fontSize={16}>Adicionar valor</Text>
                             </Button>
                         </Stack>
@@ -276,7 +280,7 @@ export default function ReceiptDetails({ route, navigation }){
                                 </Stack>
                                 <Stack direction={"row"} alignItems={"center"} space={1}>
                                   <Clock size={8} />
-                                  <Text color={"black"} fontWeight={"normal"} fontSize={14}>22:34</Text>
+                                  <Text color={"black"} fontWeight={"normal"} fontSize={14}>{item.created_at}</Text>
                                 </Stack>
                               </Stack>
 
